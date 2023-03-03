@@ -16,7 +16,11 @@ typedef int elem;
 
 //! @brief Start size of list
 
-const int SIZE = 16;
+const int MIN_SIZE = 16;
+
+//! @brief Free in prev array
+
+const int FREE = -1;
 
 //! @brief Log file
 
@@ -61,10 +65,12 @@ typedef struct
 
 typedef struct
 {
-    node * data;
-    int    head;
-    int    tail;
-    int    free;
+    node *  data;
+    int     head;
+    int     tail;
+    int     free;
+    int     size;
+    int capacity;
 
     var_info info;
 
@@ -95,24 +101,16 @@ int list_dtor(list_s * list);
 //!
 //! @return 0 - Ok, 1 - error
 
-int list_insert(list_s * list, elem value, int pos);
+int list_insert_after(list_s * list, elem value, int pos);
 
-//! @brief Insert value into list before head
+//! @brief Insert value into list after tail
 //!
 //! @param [in] list - ptr to list
 //! @param [in] value - value to push
 //!
 //! @return 0 - Ok, 1 - error
 
-int list_insert_head(list_s * list, elem value);
-
-//! @brief Find first free element with cycle
-//!
-//! @param [in] list - ptr to list's struct
-//!
-//! @return index of first free element, or 0 if there not free
-
-int find_free(list_s * list);
+int list_insert_tail(list_s * list, elem value);
 
 //! @brief Func for print list's data
 //!
