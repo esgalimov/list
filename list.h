@@ -87,7 +87,7 @@ int list_ctor_(list_s * list, var_info info);
 
 int list_dtor(list_s * list);
 
-//! @brief Push value into list after given
+//! @brief Insert value into list after given
 //!
 //! @param [in] list - ptr to list
 //! @param [in] value - value to push
@@ -95,7 +95,16 @@ int list_dtor(list_s * list);
 //!
 //! @return 0 - Ok, 1 - error
 
-int list_push(list_s * list, elem value, int pos);
+int list_insert(list_s * list, elem value, int pos);
+
+//! @brief Insert value into list before head
+//!
+//! @param [in] list - ptr to list
+//! @param [in] value - value to push
+//!
+//! @return 0 - Ok, 1 - error
+
+int list_insert_head(list_s * list, elem value);
 
 //! @brief Find first free element with cycle
 //!
@@ -110,6 +119,15 @@ int find_free(list_s * list);
 //! @param [in] list - ptr to list's struct
 
 void list_dump(list_s * list);
+
+//! @brief Remove element after given index
+//!
+//! @param [in] list - ptr to list's struct
+//! @param pos - index after which element will be removed
+//!
+//! @return 0 if succes, else - 1
+
+int list_pop(list_s * list, int pos);
 
 
 

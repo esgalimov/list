@@ -46,7 +46,7 @@ int list_dtor(list_s * list)
     return 0;
 }
 
-int list_push(list_s * list, elem value, int pos)
+int list_insert(list_s * list, elem value, int pos)
 {
     assert(list !=  NULL);
 
@@ -74,13 +74,6 @@ int list_push(list_s * list, elem value, int pos)
         list->tail = free;
     }
 
-    else if (pos == list->head - 1)
-    {
-        list->data[free].value = value;
-        list->data[free].next = list->head;
-        list->head = free;
-    }
-
     else if (list->data[pos].next != -1)
     {
         list->data[free].value = value;
@@ -91,8 +84,55 @@ int list_push(list_s * list, elem value, int pos)
     else
     {
         printf("Error: bad pos\n");
+        return 1;
     }
 
+    return 0;
+}
+
+int list_insert_head(list_s * list, elem value)
+{
+    if (list->head == 0)
+    {
+        list_insert(list, value, 1);
+    }
+
+    int free = find_free(list);
+
+    if (!free)
+    {
+        printf("Data is full\n"); // it will be realloced in next versions
+        return 1;
+    }
+
+    list->data[free].value = value;
+    list->data[free].next = list->head;
+    list->head = free;
+
+    return 0;
+}
+
+int list_pop(list_s * list, int pos)
+{
+    assert(list != NULL);
+
+    if (list->data[pos].next != -1 && list->data[pos].next != 0)
+    {
+        list->data[list->data[pos].next].value = 0;
+        list->data[list->data[pos].next].next = -1;
+        list->data[pos].next = list->data[list->data[pos].next].next;
+
+        if (list->data[pos].next == 0)
+        {
+            list->tail = pos;
+        }
+    }
+
+    else
+    {
+        printf("Error: bad pos");
+        return 1;
+    }
     return 0;
 }
 
