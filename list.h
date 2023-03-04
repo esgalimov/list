@@ -103,6 +103,16 @@ int list_dtor(list_s * list);
 
 int list_insert_after(list_s * list, elem value, int pos);
 
+//! @brief Insert value into list befor given
+//!
+//! @param [in] list - ptr to list
+//! @param [in] value - value to push
+//! @param [in] pos - index of element before which we push
+//!
+//! @return 0 - Ok, 1 - error
+
+int list_insert_before(list_s * list, elem value, int pos);
+
 //! @brief Insert value into list after tail
 //!
 //! @param [in] list - ptr to list
@@ -111,6 +121,15 @@ int list_insert_after(list_s * list, elem value, int pos);
 //! @return 0 - Ok, 1 - error
 
 int list_insert_tail(list_s * list, elem value);
+
+//! @brief Insert value into list before head
+//!
+//! @param [in] list - ptr to list
+//! @param [in] value - value to push
+//!
+//! @return 0 - Ok, 1 - error
+
+int list_insert_head(list_s * list, elem value);
 
 //! @brief Func for print list's data
 //!
@@ -126,6 +145,13 @@ void list_dump(list_s * list);
 //! @return 0 if succes, else - 1
 
 int list_pop(list_s * list, int pos);
+
+//! @brief Func to clear list
+//!
+//! @param [in] list - ptr to list's struct
+//! @return 0 - if OK
+
+int list_clear(list_s * list);
 
 
 

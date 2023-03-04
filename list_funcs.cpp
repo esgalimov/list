@@ -69,7 +69,7 @@ int list_insert_after(list_s * list, elem value, int pos)
         return 1;
     }
 
-    if (list->head == 0) // empty
+    if (list->size == 0)
     {
         list->head = 1;
         list->data[1].value = value;
@@ -107,14 +107,79 @@ int list_insert_after(list_s * list, elem value, int pos)
         return 1;
     }
 
+    list->size++;
     return 0;
 }
 
-int list_insert_tail(list_s * list, elem value) // make it in insert_list_before
+int list_insert_tail(list_s * list, elem value)
 {
     assert(list != NULL);
 
     return list_insert_after(list, value, list->tail);
+}
+
+int list_insert_before(list_s * list, elem value, int pos)
+{
+    assert(list !=  NULL);
+
+    if (!list->free)
+    {
+        printf("Data is full\n"); // it will be realloced in next versions
+        return 1;
+    }
+
+    if (pos > list->capacity - 1 || pos < 1)
+    {
+        printf("Error push after: bad pos = %d\n", pos);
+        return 1;
+    }
+
+    if (list->size == 0)
+    {
+        list->head = 1;
+        list->data[1].value = value;
+        list->free = list->data[1].next;
+        list->data[1].next = 0;
+        list->data[1].prev = 0;
+        list->tail = 1;
+    }
+
+    else if (pos == list->head)
+    {
+        int next_free = list->data[list->free].next;
+
+        list->data[list->free].value = value;
+        list->data[list->head].prev = list->free;
+        list->data[list->free].next = list->head;
+        list->data[list->free].prev = 0;
+        list->head = list->free;
+        list->free = next_free;
+    }
+
+    else if (list->data[pos].prev != FREE)                              // !!!оишибка тут!!!
+    {
+        list->data[list->free].value = value;
+        list->data[list->data[pos].prev].next = list->free;
+        list->data[pos].prev = list->free;
+        list->data[list->free].prev = list->data[pos].prev;
+        list->free = list->data[list->free].next;
+        list->data[list->free].next = pos;
+    }
+
+    else
+    {
+        printf("Error push after: bad pos = %d\n", pos);
+        return 1;
+    }
+    list->size++;
+    return 0;
+}
+
+int list_insert_head(list_s * list, elem value)
+{
+    assert(list != NULL);
+
+    return list_insert_before(list, value, list->head);
 }
 
 int list_pop(list_s * list, int pos)
@@ -156,6 +221,26 @@ int list_pop(list_s * list, int pos)
         return 1;
     }
 
+    list->size--;
+    return 0;
+}
+
+int list_clear(list_s * list)
+{
+    assert(list != NULL);
+
+    for (int i = 1; i < list->capacity; i++)
+    {
+        list->data[i].value = 0;
+        list->data[i].next = i + 1;
+        list->data[i].prev = FREE;
+    }
+    list->data[list->capacity - 1].next = 0;
+    list->free = 1;
+    list->head = 0;
+    list->tail = 0;
+    list->size = 0;
+
     return 0;
 }
 
@@ -185,5 +270,5 @@ void list_dump(list_s * list)
         printf("%4d", list->data[i].prev);
     }
 
-    printf("\n head = %d\n tail = %d \n free = %d\n", list->head, list->tail, list->free);
+    printf("\n head = %d\n tail = %d \n free = %d \n size = %d\n", list->head, list->tail, list->free, list->size);
 }
