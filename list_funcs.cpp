@@ -156,14 +156,16 @@ int list_insert_before(list_s * list, elem value, int pos)
         list->free = next_free;
     }
 
-    else if (list->data[pos].prev != FREE)                              // !!!оишибка тут!!!
+    else if (list->data[pos].prev != FREE)                         // !!!оишибка тут!!!
     {
+        int next_free = list->data[list->free].next;
+
         list->data[list->free].value = value;
         list->data[list->data[pos].prev].next = list->free;
-        list->data[pos].prev = list->free;
         list->data[list->free].prev = list->data[pos].prev;
-        list->free = list->data[list->free].next;
+        list->data[pos].prev = list->free;
         list->data[list->free].next = pos;
+        list->free = next_free;
     }
 
     else
