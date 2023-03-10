@@ -16,7 +16,7 @@ typedef int elem;
 
 //! @brief Start size of list
 
-const int MIN_SIZE = 16;
+const int MIN_SIZE = 8;
 
 //! @brief Free in prev array
 
@@ -52,7 +52,7 @@ typedef struct
 {
     elem value;
     int  next;
-    int  prev; // пока не трогаю
+    int  prev;
 } node;
 
 //! @brief Struct of list
