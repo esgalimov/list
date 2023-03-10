@@ -15,11 +15,9 @@ int main(void)
     list_insert_tail(&list, 7);
     list_insert_tail(&list, 9);
     list_insert_tail(&list, 3);
-
+    list_pop(&list, 3);
 
     list_dump(&list);
-
-    dump_list(&list);
 
     close_graphiz_file();
 

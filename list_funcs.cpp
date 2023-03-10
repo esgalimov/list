@@ -246,32 +246,3 @@ int list_clear(list_s * list)
 
     return 0;
 }
-
-void list_dump(list_s * list)
-{
-    assert(list != NULL);
-
-    for (int i = 0; i < list->capacity; i++) printf("%4d", i);
-    printf("\n");
-
-    for (int i = 0; i < list->capacity; i++)
-    {
-        printf("%4d", list->data[i].value);
-    }
-
-    printf("\n");
-
-    for (int i = 0; i < list->capacity; i++)
-    {
-        printf("%4d", list->data[i].next);
-    }
-
-        printf("\n");
-
-    for (int i = 0; i < list->capacity; i++)
-    {
-        printf("%4d", list->data[i].prev);
-    }
-
-    printf("\n head = %d\n tail = %d \n free = %d \n size = %d\n", list->head, list->tail, list->free, list->size);
-}

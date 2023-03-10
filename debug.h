@@ -47,7 +47,7 @@ int link_nodes(int index1, int index2, const char * color);
 //! Make .dot file using funcs above and use graphiz to make png picture of dump
 //! @param [in] list - ptr to list
 
-int dump_list(list_s * list);
+int list_dump(list_s * list);
 
 //! @brief Add arrows from node_info to head, tail and free
 //!

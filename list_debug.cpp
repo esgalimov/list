@@ -80,7 +80,7 @@ int link_head_tail_free(list_s * list)
     return 0;
 }
 
-int dump_list(list_s * list)
+int list_dump(list_s * list)
 {
     assert(list != NULL);
     assert(graphiz_file != NULL);

@@ -131,12 +131,6 @@ int list_insert_tail(list_s * list, elem value);
 
 int list_insert_head(list_s * list, elem value);
 
-//! @brief Func for print list's data
-//!
-//! @param [in] list - ptr to list's struct
-
-void list_dump(list_s * list);
-
 //! @brief Remove element after given index
 //!
 //! @param [in] list - ptr to list's struct
