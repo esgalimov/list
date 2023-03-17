@@ -3,6 +3,7 @@
 
 FILE * graphiz_file = NULL;
 FILE * log_file = NULL;
+int dump_cnt = 0;
 
 int open_graphiz_file(void)
 {
@@ -30,13 +31,15 @@ int close_graphiz_file(void)
 
 int open_log_file(void)
 {
-    log_file = fopen("log.html", "w");
+    log_file = fopen("./logs/log.html", "w");
 
     if (log_file == NULL)
     {
         printf("Can't open log file\n");
         return 1;
     }
+
+    fprintf(log_file, "<html>\n");
     return 0;
 }
 
@@ -47,7 +50,7 @@ int close_log_file(void)
         printf("Log file has NULL pointer, can't close it\n");
         return 1;
     }
-    fprintf(log_file, "}");
+    fprintf(log_file, "</html>");
     fclose(log_file);
     return 0;
 }
@@ -58,10 +61,8 @@ int graphiz_init(list_s * list)
     assert(graphiz_file != NULL);
 
     fprintf(graphiz_file, "digraph\n{\n    rankdir = LR;\n");
-    fprintf(graphiz_file, "    node_info[shape = record, label = \"{{name = %s \\n func = %s \\n file = %s \\n\n\
-              line = %d} | {capacity = %d | size = %d | <f0> head = %d | <f1> tail = %d | <f2> free = %d}}\"];\n\n",
-            list->info.name, list->info.func, list->info.file, list->info.line, list->capacity,
-            list->size, list->head, list->tail, list->free);
+    fprintf(graphiz_file, "    node_info[shape = record, label = \"{{capacity = %d | size = %d | <f0> head = %d | <f1> tail = %d | <f2> free = %d}}\"];\n\n",
+            list->capacity, list->size, list->head, list->tail, list->free);
 
     return 0;
 }
@@ -105,9 +106,30 @@ int link_head_tail_free(list_s * list)
     return 0;
 }
 
-int list_dump(list_s * list)
+char * create_graphiz_cmd(void)
+{
+    dump_cnt++;
+    const char * begin_cmd = "dot graphiz.dot -Tpng -o ./logs/images/list_dump";
+    const char * end_cmd = ".png";
+    char * cmd = (char *) calloc(100, sizeof(char));
+
+    strcat(cmd, begin_cmd);
+    snprintf(cmd + strlen(begin_cmd), 20, "%d", dump_cnt);
+    strcat(cmd, end_cmd);
+
+    return cmd;
+}
+
+int list_dump_(list_s * list, const char * func, const char * file, int line)
 {
     assert(list != NULL);
+
+    char * graphiz_cmd = create_graphiz_cmd();
+
+    list_dump_info(list, func, file, line);
+
+    if (list->status)
+        return 1;
 
     open_graphiz_file();
 
@@ -152,61 +174,100 @@ int list_dump(list_s * list)
     link_head_tail_free(list);
 
     close_graphiz_file();
-    system("dot ~/documents/prog/list/graphiz.dot -Tpng -o ~/documents/prog/list/list_dump.png");
+    system(graphiz_cmd);
+
+    fprintf(log_file, "<img src=\"./images/list_dump%d.png\" width=\"75%c\">\n", dump_cnt, '%');
+
+    free(graphiz_cmd);
 
     return 0;
 }
 
-int queue_verify(list_s * list)
+int list_dump_info(list_s * list, const char * func, const char * file, int line)
+{
+    list_verify(list);
+    fprintf(log_file, "<pre>\n%s at %s(%d):\n", func, file, line);
+    if (!list->status)
+    {
+        fprintf(log_file, "List %p (<span style=\"color: green\">OK</span>) \"%s\" at %s at %s(%d):\n",
+                list, list->info.name, list->info.func, list->info.file, list->info.line);
+
+        fprintf(log_file, "{\n    head     = %d\n    tail     = %d\n    free     = %d\
+            \n    size     = %d\n    capacity = %d\n",
+            list->head, list->tail, list->free, list->size, list->capacity);
+
+        fprintf(log_file, "    data [%p]\n}\n", list->data);
+        fprintf(log_file, "</pre>\n");
+    }
+    else
+    {
+        fprintf(log_file, "Queue %p (<span style=\"color: red\">ERROR</span>) \"%s\" at %s at %s(%d):\n",
+                list, list->info.name, list->info.func, list->info.file, list->info.line);
+        error_number_translate(list);
+
+        fprintf(log_file, "{\n    head     = %d\n    tail     = %d\n    free     = %d\
+            \n    size     = %d\n    capacity = %d\n",
+            list->head, list->tail, list->free, list->size, list->capacity);
+
+        fprintf(log_file, "    data [%p]", list->data);
+        fprintf(log_file, "\n}\n</pre>\n");
+
+        return 1;
+    }
+    return 0;
+}
+
+int list_verify(list_s * list)
 {
     assert(list != NULL);
 
-    int error_number = 0;
-
     if (list->data == NULL)
-        error_number += DATA_PTR_NULL;
+        list->status |= DATA_PTR_NULL;
 
     if (list->size < 0)
-        error_number += SIZE_ERROR;
+        list->status |= SIZE_ERROR;
     if (list->size > list->capacity)
-        error_number += SIZE_CAP_ERROR;
+        list->status |= SIZE_CAP_ERROR;
 
     if (list->capacity <= 0)
-        error_number += CAPACITY_ERROR;
+        list->status |= CAPACITY_ERROR;
 
     if (list->free <= 0)
-        error_number += FREE_ERROR;
+        list->status |= FREE_ERROR;
     if (list->free >= list->capacity)
-        error_number += FREE_CAP_ERROR;
-
-    if (list->data[0].value != 0 || list->data[0].next != 0 || list->data[0].prev != 0)
-        error_number += NULL_ELEMENT_ERROR;
+        list->status |= FREE_CAP_ERROR;
 
     if (list->head < 0)
-        error_number += HEAD_ERROR;
+        list->status |= HEAD_ERROR;
     if (list->head > list->capacity)
-        error_number += HEAD_CAP_ERROR;
-    if (list->data[list->head].prev != 0)
-        error_number += HEAD_NODE_ERROR;
+        list->status |= HEAD_CAP_ERROR;
 
-    if (list->tail < 0)
-        error_number += TAIL_ERROR;
+     if (list->tail < 0)
+        list->status |= TAIL_ERROR;
     if (list->tail > list->capacity)
-        error_number += TAIL_CAP_ERROR;
-    if (list->data[list->tail].next != 0)
-        error_number += TAIL_NODE_ERROR;
+        list->status |= TAIL_CAP_ERROR;
 
-    return error_number;
+    if (list->data != NULL)
+    {
+        if (list->data[0].value != 0 || list->data[0].next != 0 || list->data[0].prev != 0)
+            list->status |= NULL_ELEMENT_ERROR;
+        if (list->data[list->head].prev != 0)
+            list->status |= HEAD_NODE_ERROR;
+        if (list->data[list->tail].next != 0)
+            list->status |= TAIL_NODE_ERROR;
+    }
+
+    return 0;
 }
 
 
-void error_number_translate(int error_number)
+void error_number_translate(list_s * list)
 {
     int i = 0;
 
     while (i < ERRORS_COUNT)
     {
-        switch (error_number & (1 << i))
+        switch (list->status & (1 << i))
         {
             case 0:
                 break;
@@ -249,9 +310,19 @@ void error_number_translate(int error_number)
             case HEAD_NODE_ERROR:
                 fprintf(log_file, "Prev head element is not 0\n");
                 break;
+            case FULL_DATA_ERROR:
+                fprintf(log_file, "Data is full\n");
+                break;
+            case BAD_POS_INSERT:
+                fprintf(log_file, "Bad position to insert element\n");
+                break;
+            case BAD_POS_POP:
+                fprintf(log_file, "Bad position to pop element\n");
+                break;
             default:
                 fprintf(log_file, "Unknown error\n");
                 break;
         }
+        i++;
     }
 }

@@ -3,6 +3,8 @@
 
 #include "list.h"
 
+#define list_dump(list) list_dump_((list), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+
 //! @brief Element's type in List
 
 typedef int elem;
@@ -11,31 +13,38 @@ typedef int elem;
 
 extern FILE * log_file;
 
+//! @brief Graphiz file
+
+extern FILE * graphiz_file;
+
+//! @brief Number for count dump pictures
+
+extern int dump_cnt;
+
 //! @brief Errors what can be with list
 //! consists of 2ˆn numbers to use bit mask
 
 enum ERRORS
 {
-    DATA_PTR_NULL = 1,
-    SIZE_ERROR = 2,
-    CAPACITY_ERROR = 4,
-    SIZE_CAP_ERROR = 8,
-    FREE_ERROR = 16,
-    FREE_CAP_ERROR = 32,
-    NULL_ELEMENT_ERROR = 64,
-    TAIL_ERROR = 128,
-    TAIL_CAP_ERROR = 256,
-    TAIL_NODE_ERROR = 512,
-    HEAD_ERROR = 1024,
-    HEAD_CAP_ERROR = 2048,
-    HEAD_NODE_ERROR = 4096,
+    DATA_PTR_NULL      = 1 << 0,
+    SIZE_ERROR         = 1 << 1,
+    CAPACITY_ERROR     = 1 << 2,
+    SIZE_CAP_ERROR     = 1 << 3,
+    FREE_ERROR         = 1 << 4,
+    FREE_CAP_ERROR     = 1 << 5,
+    NULL_ELEMENT_ERROR = 1 << 6,
+    TAIL_ERROR         = 1 << 7,
+    TAIL_CAP_ERROR     = 1 << 8,
+    TAIL_NODE_ERROR    = 1 << 9,
+    HEAD_ERROR         = 1 << 10,
+    HEAD_CAP_ERROR     = 1 << 11,
+    HEAD_NODE_ERROR    = 1 << 12,
+    FULL_DATA_ERROR    = 1 << 13,
+    BAD_POS_INSERT     = 1 << 14,
+    BAD_POS_POP        = 1 << 15,
 };
 
-const int ERRORS_COUNT = 13;
-
-//! @brief Log file
-
-extern FILE * graphiz_file;
+const int ERRORS_COUNT = 16;
 
 //! @brief Func to open graphiz_file
 
@@ -81,14 +90,36 @@ int link_nodes(int index1, int index2, const char * color);
 //!
 //! Make .dot file using funcs above and use graphiz to make png picture of dump
 //! @param [in] list - ptr to list
+//! @param [in] func - ptr to func name
+//! @param [in] file - ptr to file name
+//! @param [in] line - line where was dump
+//! @return 0
 
-int list_dump(list_s * list);
+int list_dump_(list_s * list, const char * func, const char * file, int line);
+
+//! @brief Check list and write information about it in logs
+//!
+//! @param [in] list - ptr to list
+//! @param [in] func - ptr to func name
+//! @param [in] file - ptr to file name
+//! @param [in] line - line where was dump
+//! @return 0
+
+int list_dump_info(list_s * list, const char * func, const char * file, int line);
 
 //! @brief Add arrows from node_info to head, tail and free
 //!
 //! @param list [in] - ptr to list
 
 int link_head_tail_free(list_s * list);
+
+//! @brief Func create string with graphiz console command (make png from .dot file)
+//! it use global variable 'dump_number' to create name of next picture
+//! cmd string buffer allocated with calloc (don't forget to free)
+//!
+//! @return ptr to string
+
+char * create_graphiz_cmd(void);
 
 //! @brief Func to check list
 //! Summarize codes of mistakes to make number where each bit is concrete mistake
@@ -103,6 +134,6 @@ int list_verify(list_s * list);
 //!
 //! @param [in] error_number - error number what return list verify
 
-void error_number_translate(int error_number);
+void error_number_translate(list_s * list);
 
 #endif

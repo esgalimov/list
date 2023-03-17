@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #define LOCATION __PRETTY_FUNCTION__, __FILE__, __LINE__
 #define list_ctor(list) list_ctor_((list), var_info {#list, LOCATION})
 
-//#define list_dump(list, error_number) queue_dump_((list), (error_number), __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
 //! @brief Element's type in List
 
@@ -67,6 +67,7 @@ typedef struct
     int     free;
     int     size;
     int capacity;
+    int   status;
 
     var_info info;
 

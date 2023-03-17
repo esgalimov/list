@@ -14,6 +14,7 @@ int list_ctor_(list_s * list, var_info info)
     list->tail = 0;
     list->size = 0;
     list->free = 1;
+    list->status = 0;
 
     list->info = info;
 
@@ -45,6 +46,10 @@ int list_dtor(list_s * list)
     list->free = 0;
     list->capacity = 0;
     list->size = 0;
+    list->status = 0;
+
+    fprintf(log_file, "<pre>\nList %p \"%s\" at %s at %s(%d): DESTRUCTED\n</pre>\n",
+                list, list->info.name, list->info.func, list->info.file, list->info.line);
 
     list->info.file = NULL;
     list->info.func = NULL;
@@ -60,13 +65,17 @@ int list_insert_after(list_s * list, elem value, int pos)
 
     if (!list->free)
     {
-        printf("Data is full\n"); // it will be realloced in next versions
-        return 1;
+        list->status |= FULL_DATA_ERROR;
     }
 
     if (pos > list->capacity - 1 || pos < 1)
     {
-        printf("Error push after: bad pos = %d\n", pos);
+        list->status |= BAD_POS_INSERT;
+    }
+
+    if (list->status)
+    {
+        list_dump(list);
         return 1;
     }
 
@@ -104,11 +113,15 @@ int list_insert_after(list_s * list, elem value, int pos)
 
     else
     {
-        printf("Error push after: bad pos = %d\n", pos);
+        list->status += BAD_POS_INSERT;
+        list_dump(list);
         return 1;
     }
 
     list->size++;
+
+    list_dump(list);
+
     return 0;
 }
 
@@ -125,13 +138,17 @@ int list_insert_before(list_s * list, elem value, int pos)
 
     if (!list->free)
     {
-        printf("Data is full\n"); // it will be realloced in next versions
-        return 1;
+        list->status |= FULL_DATA_ERROR;
     }
 
     if (pos > list->capacity - 1 || pos < 1)
     {
-        printf("Error push after: bad pos = %d\n", pos);
+        list->status |= BAD_POS_INSERT;
+    }
+
+    if (list->status)
+    {
+        list_dump(list);
         return 1;
     }
 
@@ -171,10 +188,14 @@ int list_insert_before(list_s * list, elem value, int pos)
 
     else
     {
-        printf("Error push after: bad pos = %d\n", pos);
+        list->status |= BAD_POS_INSERT;
+        list_dump(list);
         return 1;
     }
     list->size++;
+
+    list_dump(list);
+
     return 0;
 }
 
@@ -189,10 +210,17 @@ int list_pop(list_s * list, int pos)
 {
     assert(list != NULL);
 
+    if (list->status)
+    {
+        list_dump(list);
+        return 1;
+    }
+
     if (pos == list->head)
     {
         list->data[pos].value = 0;
         list->head = list->data[pos].next;
+        list->data[list->head].prev = 0;
         list->data[pos].next = list->free;
         list->data[pos].prev = FREE;
         list->free = pos;
@@ -220,17 +248,27 @@ int list_pop(list_s * list, int pos)
 
     else
     {
-        printf("Error pop: bad pos = %d\n", pos);
+        list->status |= BAD_POS_POP;
+        list_dump(list);
         return 1;
     }
 
     list->size--;
+
+    list_dump(list);
+
     return 0;
 }
 
 int list_clear(list_s * list)
 {
     assert(list != NULL);
+
+    if (list->status)
+    {
+        list_dump(list);
+        return 1;
+    }
 
     for (int i = 1; i < list->capacity; i++)
     {
@@ -243,6 +281,8 @@ int list_clear(list_s * list)
     list->head = 0;
     list->tail = 0;
     list->size = 0;
+
+    list_dump(list);
 
     return 0;
 }
