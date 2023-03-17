@@ -7,7 +7,7 @@ int main(void)
 
     list_ctor(&list);
 
-    open_graphiz_file();
+    open_log_file();
 
 
     list_insert_before(&list, 3, 1);
@@ -17,9 +17,10 @@ int main(void)
     list_insert_tail(&list, 3);
     list_pop(&list, 3);
 
+    //list.data[4].next = 2;
     list_dump(&list);
 
-    close_graphiz_file();
+    close_log_file();
 
     return 0;
 }

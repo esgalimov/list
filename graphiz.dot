@@ -20,13 +20,13 @@ digraph
             style="filled", fillcolor="#F0E68C"];
     node7[shape = Mrecord, label = "{index = 7} | {value = FREE} | {next = 0 | prev = -1}",
             style="filled", fillcolor="#F0E68C"];
-    node2->node1 [color = "#DC143C"];
     node1->node2 [color = "#0000CD"];
+    node2->node1 [color = "#DC143C"];
+    node2->node4 [color = "#0000CD"];
     node3->node6 [color = "#98FB98"];
     node4->node2 [color = "#DC143C"];
-    node2->node4 [color = "#0000CD"];
-    node5->node4 [color = "#DC143C"];
     node4->node5 [color = "#0000CD"];
+    node5->node4 [color = "#DC143C"];
     node6->node7 [color = "#98FB98"];
     node_info:<f0>->node1 [color = "gray", style="dashed"];
     node_info:<f1>->node5 [color = "gray", style="dashed"];

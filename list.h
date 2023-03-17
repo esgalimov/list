@@ -22,10 +22,6 @@ const int MIN_SIZE = 8;
 
 const int FREE = -1;
 
-//! @brief Log file
-
-extern FILE * log_file;
-
 //! @struct var_info
 //! @brief Information about queue to write to log
 //!
