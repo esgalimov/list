@@ -11,15 +11,12 @@
 
 
 //! @brief Element's type in List
-
 typedef int elem;
 
 //! @brief Start size of list
-
-const int MIN_SIZE = 8;
+const int MIN_SIZE = 12;
 
 //! @brief Free in prev array
-
 const int FREE = -1;
 
 //! @struct var_info
@@ -29,7 +26,6 @@ const int FREE = -1;
 //! @var func - function where queue created
 //! @var file - file where queue created
 //! @var line - line where queue created
-
 typedef struct
 {
     const char * name;
@@ -43,7 +39,6 @@ typedef struct
 //! @var value - value of node
 //! @var next - index of next element
 //! @var prev - index 0f previous element
-
 typedef struct
 {
     elem value;
@@ -58,7 +53,6 @@ typedef struct
 //! @var tail - index of last element
 //! @var free - index of first free element in list's array
 //! @var info - struct with info about variable to use it in logs
-
 typedef struct
 {
     node *  data;
@@ -79,7 +73,6 @@ typedef struct
 //! @param [in] info - info about list
 //!
 //! @return 0 - if created OK, 1 - else
-
 int list_ctor_(list_s * list, var_info info);
 
 
@@ -87,7 +80,6 @@ int list_ctor_(list_s * list, var_info info);
 //!
 //! @param [in] qu - ptr to list
 //! @return 0 if OK
-
 int list_dtor(list_s * list);
 
 //! @brief Insert value into list after given
@@ -97,7 +89,6 @@ int list_dtor(list_s * list);
 //! @param [in] pos - index of element after which we push
 //!
 //! @return 0 - Ok, 1 - error
-
 int list_insert_after(list_s * list, elem value, int pos);
 
 //! @brief Insert value into list befor given
@@ -107,7 +98,6 @@ int list_insert_after(list_s * list, elem value, int pos);
 //! @param [in] pos - index of element before which we push
 //!
 //! @return 0 - Ok, 1 - error
-
 int list_insert_before(list_s * list, elem value, int pos);
 
 //! @brief Insert value into list after tail
@@ -116,7 +106,6 @@ int list_insert_before(list_s * list, elem value, int pos);
 //! @param [in] value - value to push
 //!
 //! @return 0 - Ok, 1 - error
-
 int list_insert_tail(list_s * list, elem value);
 
 //! @brief Insert value into list before head
@@ -125,7 +114,6 @@ int list_insert_tail(list_s * list, elem value);
 //! @param [in] value - value to push
 //!
 //! @return 0 - Ok, 1 - error
-
 int list_insert_head(list_s * list, elem value);
 
 //! @brief Remove element after given index
@@ -134,15 +122,57 @@ int list_insert_head(list_s * list, elem value);
 //! @param pos - index after which element will be removed
 //!
 //! @return 0 if succes, else - 1
-
 int list_pop(list_s * list, int pos);
 
 //! @brief Func to clear list
 //!
 //! @param [in] list - ptr to list's struct
 //! @return 0 - if OK
-
 int list_clear(list_s * list);
+
+//! @brief Return element after given
+//!
+//! @param [in] list - ptr to list
+//! @param [in] pos - index of element to get next
+//! @return 0 - if bad pos or tail, else - phys index of next
+int list_get_next(list_s * list, int pos);
+
+//! @brief Return element before given
+//!
+//! @param [in] list - ptr to list
+//! @param [in] pos - index of element to get prev
+//! @return 0 - if bad pos or head, else - phys index of prev
+int list_get_prev(list_s * list, int pos);
+
+//! @brief Find element with given value
+//!
+//! @param [in] list - ptr to list
+//! @param [in] value - value to find
+//! @return 0 - if not found, else - phys index of element
+int list_find_elem(list_s * list, elem value);
+
+//! @brief Return list head
+int list_get_head(list_s * list);
+
+//! @brief Return list tail
+int list_get_tail(list_s * list);
+
+//! @brief Get physical index by logical
+//!
+//! @param [in] list - ptr to list
+//! @param [in] log_i - logical index
+//! @return 0 - if bad logical index, else - logical index
+int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_s * list, int log_i);
+
+//! @brief 1 - if empty, 0 - else
+//! @param [in] list - ptr to list
+int list_is_empty(list_s * list);
+
+//! @brief Make list linearize (logical_index = phys_index - 1)
+//! @param [in] list - ptr to list
+//! @return 1 - if mistake, 0 - Ok
+int list_linearize(list_s * list);
+
 
 
 

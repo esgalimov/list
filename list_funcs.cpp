@@ -286,3 +286,126 @@ int list_clear(list_s * list)
 
     return 0;
 }
+
+int list_get_next(list_s * list, int pos)
+{
+    assert(list != NULL);
+
+    if (pos < 0 || pos > list->capacity)
+        return 0;
+
+    return list->data[pos].next;
+}
+
+int list_get_prev(list_s * list, int pos)
+{
+    assert(list != NULL);
+
+    if (pos < 0 || pos > list->capacity)
+        return 0;
+
+    return list->data[pos].prev;
+}
+
+int list_find_elem(list_s * list, elem value)
+{
+    assert(list != NULL);
+
+    int current = list->head;
+
+    while (list->data[current].next != 0)
+    {
+        if (list->data[current].value == value)
+        {
+            return current;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+int list_get_head(list_s * list)
+{
+    assert(list != NULL);
+
+    return list->head;
+}
+
+int list_get_tail(list_s * list)
+{
+    assert(list != NULL);
+
+    return list->tail;
+}
+
+int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_s * list, int log_i)
+{
+    if (log_i < 0 || log_i >= list->size)
+    {
+        return 0;
+    }
+
+    int current = list->head;
+
+    for (int i = 0; i < log_i; i++)
+    {
+        current = list->data[current].next;
+    }
+
+    return current;
+}
+
+int list_is_empty(list_s * list)
+{
+    return !list->size;
+}
+
+int list_linearize(list_s * list)
+{
+    assert(list != NULL);
+
+    if (list->status)
+    {
+        list_dump(list);
+        return 1;
+    }
+
+    node * new_data = (node *) calloc((size_t) list->capacity, sizeof(node));
+
+    int current = list->head;
+    int i = 1;
+
+    while (list->data[current].next != 0)
+    {
+        new_data[i].value = list->data[current].value;
+        new_data[i].prev = i - 1;
+        new_data[i].next = i + 1;
+
+        current = list->data[current].next;
+        i++;
+    }
+
+    list->head = 1;
+    list->tail = i;
+    list->free = (list->free == 0) ? 0 : i + 1;
+
+    new_data[i].prev = i - 1;
+
+    for (i = i + 1; i < list->capacity; i++)
+    {
+        new_data[i].next = i + 1;
+        new_data[i].prev = FREE;
+        new_data[i].value = FREE;
+    }
+
+    new_data[list->capacity - 1].next = 0;
+
+    free(list->data);
+
+    list->data = new_data;
+
+    list_dump(list);
+
+    return 0;
+}

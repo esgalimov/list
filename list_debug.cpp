@@ -7,7 +7,7 @@ int dump_cnt = 0;
 
 int open_graphiz_file(void)
 {
-    graphiz_file = fopen("graphiz.dot", "w");
+    graphiz_file = fopen("./tmp/graphiz.dot", "w");
 
     if (graphiz_file == NULL)
     {
@@ -109,7 +109,7 @@ int link_head_tail_free(list_s * list)
 char * create_graphiz_cmd(void)
 {
     dump_cnt++;
-    const char * begin_cmd = "dot graphiz.dot -Tpng -o ./logs/images/list_dump";
+    const char * begin_cmd = "dot ./tmp/graphiz.dot -Tpng -o ./logs/images/list_dump";
     const char * end_cmd = ".png";
     char * cmd = (char *) calloc(100, sizeof(char));
 
