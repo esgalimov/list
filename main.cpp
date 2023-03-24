@@ -13,19 +13,14 @@ int main(void)
     list_insert_before(&list, 89, 1);
     list_insert_before(&list, 34, 2);
     list_insert_after(&list, 67, 1);
-    printf("phys index %d\n", get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(&list, 2));
-    list_linearize(&list);
 
-    printf("head %d\n", list_get_head(&list));
-    printf("tail %d\n", list_get_tail(&list));
-    printf("next after 2 %d\n", list_get_next(&list, 2));
-    printf("prev before 2 %d\n", list_get_prev(&list, 2));
-    printf("isempty %d\n", list_is_empty(&list));
+    for (int i = 0; i < 10; i++)
+        list_insert_tail(&list, 20 + i);
 
+    for (int i = 0; i < 9; i++)
+        list_pop(&list, list_get_head(&list));
 
     list_clear(&list);
-
-    //list.data[4].next = 2;
     list_dump(&list);
 
     list_dtor(&list);

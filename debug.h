@@ -39,12 +39,11 @@ enum ERRORS
     HEAD_ERROR         = 1 << 10,
     HEAD_CAP_ERROR     = 1 << 11,
     HEAD_NODE_ERROR    = 1 << 12,
-    FULL_DATA_ERROR    = 1 << 13,
-    BAD_POS_INSERT     = 1 << 14,
-    BAD_POS_POP        = 1 << 15,
+    BAD_POS_INSERT     = 1 << 13,
+    BAD_POS_POP        = 1 << 14,
 };
 
-const int ERRORS_COUNT = 16;
+const int ERRORS_COUNT = 15;
 
 //! @brief Func to open graphiz_file
 

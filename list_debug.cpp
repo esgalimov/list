@@ -232,7 +232,7 @@ int list_verify(list_s * list)
     if (list->capacity <= 0)
         list->status |= CAPACITY_ERROR;
 
-    if (list->free <= 0)
+    if (list->free < 0)
         list->status |= FREE_ERROR;
     if (list->free >= list->capacity)
         list->status |= FREE_CAP_ERROR;
@@ -309,9 +309,6 @@ void error_number_translate(list_s * list)
                 break;
             case HEAD_NODE_ERROR:
                 fprintf(log_file, "Prev head element is not 0\n");
-                break;
-            case FULL_DATA_ERROR:
-                fprintf(log_file, "Data is full\n");
                 break;
             case BAD_POS_INSERT:
                 fprintf(log_file, "Bad position to insert element\n");

@@ -65,7 +65,7 @@ int list_insert_after(list_s * list, elem value, int pos)
 
     if (!list->free)
     {
-        list->status |= FULL_DATA_ERROR;
+        list_resize(list, list->capacity * 2);
     }
 
     if (pos > list->capacity - 1 || pos < 1)
@@ -138,7 +138,7 @@ int list_insert_before(list_s * list, elem value, int pos)
 
     if (!list->free)
     {
-        list->status |= FULL_DATA_ERROR;
+        list_resize(list, list->capacity * 2);
     }
 
     if (pos > list->capacity - 1 || pos < 1)
@@ -174,7 +174,7 @@ int list_insert_before(list_s * list, elem value, int pos)
         list->free = next_free;
     }
 
-    else if (list->data[pos].prev != FREE)                         // !!!оишибка тут!!!
+    else if (list->data[pos].prev != FREE)
     {
         int next_free = list->data[list->free].next;
 
@@ -254,6 +254,11 @@ int list_pop(list_s * list, int pos)
     }
 
     list->size--;
+
+    if (list->size < list->capacity / 4 && list->size > 0)
+    {
+        list_resize(list, list->capacity / 2);
+    }
 
     list_dump(list);
 
@@ -385,6 +390,7 @@ int list_linearize(list_s * list)
         current = list->data[current].next;
         i++;
     }
+    new_data[i].value = list->data[current].value;
 
     list->head = 1;
     list->tail = i;
@@ -408,4 +414,48 @@ int list_linearize(list_s * list)
     list_dump(list);
 
     return 0;
+}
+
+int list_resize(list_s * list, int new_capacity)
+{
+    assert(list != NULL);
+
+    if (list->status)
+    {
+        list_dump(list);
+        return 1;
+    }
+
+    if (new_capacity < list->capacity)
+    {
+        if (new_capacity < MIN_SIZE)
+        {
+            new_capacity = MIN_SIZE;
+        }
+        list_linearize(list);
+        list->data = (node *) realloc(list->data, (size_t) new_capacity * sizeof(node));
+        list->capacity = new_capacity;
+        list->data[new_capacity - 1].next = 0;
+    }
+    else
+    {
+        list->data = (node *) realloc(list->data, (size_t) new_capacity * sizeof(node));
+
+        for (int i = list->capacity; i < new_capacity; i++)
+        {
+            list->data[i].value = FREE;
+            list->data[i].prev = FREE;
+            list->data[i].next = i + 1;
+        }
+        list->data[new_capacity - 1].next = 0;
+
+
+        list->free = list->capacity;
+        list->capacity = new_capacity;
+    }
+
+    list_dump(list);
+
+    return 0;
+
 }

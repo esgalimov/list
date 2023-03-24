@@ -173,6 +173,12 @@ int list_is_empty(list_s * list);
 //! @return 1 - if mistake, 0 - Ok
 int list_linearize(list_s * list);
 
+//! @brief Func to resize list's data
+//! @param [in] list - ptr to list
+//! @param [in] new_capacity - new capacity for list
+//! @return 1 - error, 0 - Ok
+int list_resize(list_s * list, int new_capacity);
+
 
 
 
