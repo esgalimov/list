@@ -14,14 +14,6 @@
 
 typedef int elem;
 
-//! @brief Start size of list
-
-const int MIN_SIZE = 8;
-
-//! @brief Free in prev array
-
-const int FREE = -1;
-
 //! @struct var_info
 //! @brief Information about queue to write to log
 //!
@@ -47,8 +39,8 @@ typedef struct
 typedef struct
 {
     elem value;
-    int  next;
-    int  prev;
+    node *  next;
+    node *  prev;
 } node;
 
 //! @brief Struct of list
@@ -61,12 +53,9 @@ typedef struct
 
 typedef struct
 {
-    node *  data;
-    int     head;
-    int     tail;
-    int     free;
+    node *  head;
+    node *  tail;
     int     size;
-    int capacity;
     int   status;
 
     var_info info;

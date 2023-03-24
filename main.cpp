@@ -13,10 +13,12 @@ int main(void)
     list_insert_before(&list, 89, 1);
     list_insert_before(&list, 34, 2);
     list_insert_after(&list, 67, 1);
+
     // list_insert_tail(&list, 6);
     // list_insert_tail(&list, 7);
     // list_insert_tail(&list, 9);
     // list_insert_tail(&list, 3);
+
     list_pop(&list, 3);
     list_clear(&list);
 
