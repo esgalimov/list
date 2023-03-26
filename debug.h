@@ -3,7 +3,21 @@
 
 #include "list.h"
 
-#define list_dump(list) list_dump_((list), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#define LOG_MODE
+
+#ifdef LOG_MODE
+    #define ASSERT(condition)                                                               \
+        if (!(condition))                                                                   \
+        {                                                                                   \
+            fprintf(log_file, "\nError in \"%s\" in %d line in function %s in file %s\n",   \
+                    #condition, __LINE__, __PRETTY_FUNCTION__, __FILE__);                   \
+            abort();                                                                        \
+        }
+    #define list_dump(list) list_dump_((list), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#else
+    #define ASSERT(condition)
+    #define list_dump(list)
+#endif
 
 //! @brief Element's type in List
 

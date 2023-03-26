@@ -3,10 +3,7 @@
 
 int list_ctor_(list_s * list, var_info info)
 {
-    assert(list != NULL);
-    assert(info.file);
-    assert(info.func);
-    assert(info.name);
+    ASSERT(list);
 
     list->capacity = MIN_SIZE;
     list->data = (node *) calloc((size_t) list->capacity, sizeof(node));
@@ -37,7 +34,7 @@ int list_ctor_(list_s * list, var_info info)
 
 int list_dtor(list_s * list)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     free(list->data);
     list->data = NULL;
@@ -48,8 +45,10 @@ int list_dtor(list_s * list)
     list->size = 0;
     list->status = 0;
 
-    fprintf(log_file, "<pre>\nList %p \"%s\" at %s at %s(%d): DESTRUCTED\n</pre>\n",
-                list, list->info.name, list->info.func, list->info.file, list->info.line);
+    #ifdef LOG_MODE
+        fprintf(log_file, "<pre>\nList %p \"%s\" at %s at %s(%d): DESTRUCTED\n</pre>\n",
+                    list, list->info.name, list->info.func, list->info.file, list->info.line);
+    #endif
 
     list->info.file = NULL;
     list->info.func = NULL;
@@ -61,7 +60,7 @@ int list_dtor(list_s * list)
 
 int list_insert_after(list_s * list, elem value, int pos)
 {
-    assert(list !=  NULL);
+    ASSERT(list);
 
     if (!list->free)
     {
@@ -127,14 +126,14 @@ int list_insert_after(list_s * list, elem value, int pos)
 
 int list_insert_tail(list_s * list, elem value)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     return list_insert_after(list, value, list->tail);
 }
 
 int list_insert_before(list_s * list, elem value, int pos)
 {
-    assert(list !=  NULL);
+    ASSERT(list);
 
     if (!list->free)
     {
@@ -201,14 +200,14 @@ int list_insert_before(list_s * list, elem value, int pos)
 
 int list_insert_head(list_s * list, elem value)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     return list_insert_before(list, value, list->head);
 }
 
 int list_pop(list_s * list, int pos)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (list->status)
     {
@@ -267,7 +266,7 @@ int list_pop(list_s * list, int pos)
 
 int list_clear(list_s * list)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (list->status)
     {
@@ -294,7 +293,7 @@ int list_clear(list_s * list)
 
 int list_get_next(list_s * list, int pos)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (pos < 0 || pos > list->capacity)
         return 0;
@@ -304,7 +303,7 @@ int list_get_next(list_s * list, int pos)
 
 int list_get_prev(list_s * list, int pos)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (pos < 0 || pos > list->capacity)
         return 0;
@@ -314,7 +313,7 @@ int list_get_prev(list_s * list, int pos)
 
 int list_find_elem(list_s * list, elem value)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     int current = list->head;
 
@@ -332,20 +331,22 @@ int list_find_elem(list_s * list, elem value)
 
 int list_get_head(list_s * list)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     return list->head;
 }
 
 int list_get_tail(list_s * list)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     return list->tail;
 }
 
 int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_s * list, int log_i)
 {
+    ASSERT(list);
+
     if (log_i < 0 || log_i >= list->size)
     {
         return 0;
@@ -363,12 +364,14 @@ int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_
 
 int list_is_empty(list_s * list)
 {
+    ASSERT(list);
+
     return !list->size;
 }
 
 int list_linearize(list_s * list)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (list->status)
     {
@@ -418,7 +421,7 @@ int list_linearize(list_s * list)
 
 int list_resize(list_s * list, int new_capacity)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (list->status)
     {
@@ -457,5 +460,4 @@ int list_resize(list_s * list, int new_capacity)
     list_dump(list);
 
     return 0;
-
 }

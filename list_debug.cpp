@@ -29,36 +29,41 @@ int close_graphiz_file(void)
     return 0;
 }
 
-int open_log_file(void)
-{
-    log_file = fopen("./logs/log.html", "w");
-
-    if (log_file == NULL)
+#ifdef LOG_MODE
+    int open_log_file(void)
     {
-        printf("Can't open log file\n");
-        return 1;
+        log_file = fopen("./logs/log.html", "w");
+
+        if (log_file == NULL)
+        {
+            printf("Can't open log file\n");
+            return 1;
+        }
+
+        fprintf(log_file, "<html>\n");
+        return 0;
     }
 
-    fprintf(log_file, "<html>\n");
-    return 0;
-}
-
-int close_log_file(void)
-{
-    if (log_file == NULL)
+    int close_log_file(void)
     {
-        printf("Log file has NULL pointer, can't close it\n");
-        return 1;
+        if (log_file == NULL)
+        {
+            printf("Log file has NULL pointer, can't close it\n");
+            return 1;
+        }
+        fprintf(log_file, "</html>");
+        fclose(log_file);
+        return 0;
     }
-    fprintf(log_file, "</html>");
-    fclose(log_file);
-    return 0;
-}
+#else
+    int open_log_file(void)  { return 0; }
+    int close_log_file(void) { return 0; }
+#endif
 
 int graphiz_init(list_s * list)
 {
-    assert(list != NULL);
-    assert(graphiz_file != NULL);
+    ASSERT(list);
+    ASSERT(graphiz_file);
 
     fprintf(graphiz_file, "digraph\n{\n    rankdir = LR;\n");
     fprintf(graphiz_file, "    node_info[shape = record, label = \"{{capacity = %d | size = %d | <f0> head = %d | <f1> tail = %d | <f2> free = %d}}\"];\n\n",
@@ -69,9 +74,9 @@ int graphiz_init(list_s * list)
 
 int add_node(node * nd, int index, const char * color)
 {
-    assert(nd != NULL);
-    assert(graphiz_file != NULL);
-    assert(color != NULL);
+    ASSERT(nd);
+    ASSERT(graphiz_file);
+    ASSERT(color);
 
     if (nd->prev != FREE)
     {
@@ -88,7 +93,8 @@ int add_node(node * nd, int index, const char * color)
 
 int link_nodes(int index1, int index2, const char * color)
 {
-    assert(color != NULL);
+    ASSERT(color);
+
     fprintf(graphiz_file, "    node%d->node%d [color = \"%s\"];\n", index1, index2, color);
 
     return 0;
@@ -96,8 +102,8 @@ int link_nodes(int index1, int index2, const char * color)
 
 int link_head_tail_free(list_s * list)
 {
-    assert(list != NULL);
-    assert(graphiz_file != NULL);
+    ASSERT(list);
+    ASSERT(graphiz_file);
 
     fprintf(graphiz_file, "    node_info:<f0>->node%d [color = \"gray\", style=\"dashed\"];\n", list->head);
     fprintf(graphiz_file, "    node_info:<f1>->node%d [color = \"gray\", style=\"dashed\"];\n", list->tail);
@@ -122,7 +128,7 @@ char * create_graphiz_cmd(void)
 
 int list_dump_(list_s * list, const char * func, const char * file, int line)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     char * graphiz_cmd = create_graphiz_cmd();
 
@@ -185,6 +191,8 @@ int list_dump_(list_s * list, const char * func, const char * file, int line)
 
 int list_dump_info(list_s * list, const char * func, const char * file, int line)
 {
+    ASSERT(list);
+
     list_verify(list);
     fprintf(log_file, "<pre>\n%s at %s(%d):\n", func, file, line);
     if (!list->status)
@@ -219,7 +227,7 @@ int list_dump_info(list_s * list, const char * func, const char * file, int line
 
 int list_verify(list_s * list)
 {
-    assert(list != NULL);
+    ASSERT(list);
 
     if (list->data == NULL)
         list->status |= DATA_PTR_NULL;
@@ -263,6 +271,8 @@ int list_verify(list_s * list)
 
 void error_number_translate(list_s * list)
 {
+    ASSERT(list);
+
     int i = 0;
 
     while (i < ERRORS_COUNT)
