@@ -1,12 +1,12 @@
 #include "list.h"
 #include "debug.h"
 
-int list_ctor_(list_s * list, var_info info)
+int list_ctor_(list_t * list, var_info info)
 {
     ASSERT(list);
 
     list->capacity = MIN_SIZE;
-    list->data = (node *) calloc((size_t) list->capacity, sizeof(node));
+    list->data = (node_t *) calloc((size_t) list->capacity, sizeof(node_t));
     list->head = 0;
     list->tail = 0;
     list->size = 0;
@@ -32,7 +32,7 @@ int list_ctor_(list_s * list, var_info info)
     return 0;
 }
 
-int list_dtor(list_s * list)
+int list_dtor(list_t * list)
 {
     ASSERT(list);
 
@@ -58,7 +58,7 @@ int list_dtor(list_s * list)
     return 0;
 }
 
-int list_insert_after(list_s * list, elem value, int pos)
+int list_insert_after(list_t * list, elem value, int pos)
 {
     ASSERT(list);
 
@@ -124,14 +124,14 @@ int list_insert_after(list_s * list, elem value, int pos)
     return 0;
 }
 
-int list_insert_tail(list_s * list, elem value)
+int list_insert_tail(list_t * list, elem value)
 {
     ASSERT(list);
 
     return list_insert_after(list, value, list->tail);
 }
 
-int list_insert_before(list_s * list, elem value, int pos)
+int list_insert_before(list_t * list, elem value, int pos)
 {
     ASSERT(list);
 
@@ -198,16 +198,21 @@ int list_insert_before(list_s * list, elem value, int pos)
     return 0;
 }
 
-int list_insert_head(list_s * list, elem value)
+int list_insert_head(list_t * list, elem value)
 {
     ASSERT(list);
 
     return list_insert_before(list, value, list->head);
 }
 
-int list_pop(list_s * list, int pos)
+int list_pop(list_t * list, int pos)
 {
     ASSERT(list);
+
+    if (pos >= list->capacity || pos <= 0 || list->data[pos].prev == FREE)
+    {
+        list->status |= BAD_POS_POP;
+    }
 
     if (list->status)
     {
@@ -235,7 +240,7 @@ int list_pop(list_s * list, int pos)
         list->free = pos;
     }
 
-    else if (pos > 0 && pos < list->capacity && list->data[pos].prev != FREE)
+    else
     {
         list->data[pos].value = 0;
         list->data[list->data[pos].prev].next = list->data[pos].next;
@@ -243,13 +248,6 @@ int list_pop(list_s * list, int pos)
         list->data[pos].next = list->free;
         list->data[pos].prev = FREE;
         list->free = pos;
-    }
-
-    else
-    {
-        list->status |= BAD_POS_POP;
-        list_dump(list);
-        return 1;
     }
 
     list->size--;
@@ -264,7 +262,7 @@ int list_pop(list_s * list, int pos)
     return 0;
 }
 
-int list_clear(list_s * list)
+int list_clear(list_t * list)
 {
     ASSERT(list);
 
@@ -291,7 +289,7 @@ int list_clear(list_s * list)
     return 0;
 }
 
-int list_get_next(list_s * list, int pos)
+int list_get_next(list_t * list, int pos)
 {
     ASSERT(list);
 
@@ -301,7 +299,7 @@ int list_get_next(list_s * list, int pos)
     return list->data[pos].next;
 }
 
-int list_get_prev(list_s * list, int pos)
+int list_get_prev(list_t * list, int pos)
 {
     ASSERT(list);
 
@@ -311,7 +309,7 @@ int list_get_prev(list_s * list, int pos)
     return list->data[pos].prev;
 }
 
-int list_find_elem(list_s * list, elem value)
+int list_find_elem(list_t * list, elem value)
 {
     ASSERT(list);
 
@@ -322,28 +320,28 @@ int list_find_elem(list_s * list, elem value)
         if (list->data[current].value == value)
         {
             return current;
-            break;
         }
+        current = list->data[current].next;
     }
 
     return 0;
 }
 
-int list_get_head(list_s * list)
+int list_get_head(list_t * list)
 {
     ASSERT(list);
 
     return list->head;
 }
 
-int list_get_tail(list_s * list)
+int list_get_tail(list_t * list)
 {
     ASSERT(list);
 
     return list->tail;
 }
 
-int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_s * list, int log_i)
+int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_t * list, int log_i)
 {
     ASSERT(list);
 
@@ -362,14 +360,14 @@ int get_element_by_logical_index_but_it_is_too_long_so_save_phycal_indexes(list_
     return current;
 }
 
-int list_is_empty(list_s * list)
+int list_is_empty(list_t * list)
 {
     ASSERT(list);
 
     return !list->size;
 }
 
-int list_linearize(list_s * list)
+int list_linearize(list_t * list)
 {
     ASSERT(list);
 
@@ -379,7 +377,7 @@ int list_linearize(list_s * list)
         return 1;
     }
 
-    node * new_data = (node *) calloc((size_t) list->capacity, sizeof(node));
+    node_t * new_data = (node_t *) calloc((size_t) list->capacity, sizeof(node_t));
 
     int current = list->head;
     int i = 1;
@@ -419,7 +417,7 @@ int list_linearize(list_s * list)
     return 0;
 }
 
-int list_resize(list_s * list, int new_capacity)
+int list_resize(list_t * list, int new_capacity)
 {
     ASSERT(list);
 
@@ -436,13 +434,13 @@ int list_resize(list_s * list, int new_capacity)
             new_capacity = MIN_SIZE;
         }
         list_linearize(list);
-        list->data = (node *) realloc(list->data, (size_t) new_capacity * sizeof(node));
+        list->data = (node_t *) realloc(list->data, (size_t) new_capacity * sizeof(node_t));
         list->capacity = new_capacity;
         list->data[new_capacity - 1].next = 0;
     }
     else
     {
-        list->data = (node *) realloc(list->data, (size_t) new_capacity * sizeof(node));
+        list->data = (node_t *) realloc(list->data, (size_t) new_capacity * sizeof(node_t));
 
         for (int i = list->capacity; i < new_capacity; i++)
         {

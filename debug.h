@@ -81,7 +81,7 @@ int close_log_file(void);
 //!
 //! @param [in] list - ptr to list's struct
 
-int graphiz_init(list_s * list);
+int graphiz_init(list_t * list);
 
 //! @brief Add element into .dot file to use graphiz
 //!
@@ -89,7 +89,7 @@ int graphiz_init(list_s * list);
 //! @param [in] index - index of node in data array
 //! @param [in] color - color of node's filling
 
-int add_node(node * nd, int index, const char * color);
+int add_node(node_t * nd, int index, const char * color);
 
 //! @brief Link nodes
 //!
@@ -108,7 +108,7 @@ int link_nodes(int index1, int index2, const char * color);
 //! @param [in] line - line where was dump
 //! @return 0
 
-int list_dump_(list_s * list, const char * func, const char * file, int line);
+int list_dump_(list_t * list, const char * func, const char * file, int line);
 
 //! @brief Check list and write information about it in logs
 //!
@@ -118,13 +118,13 @@ int list_dump_(list_s * list, const char * func, const char * file, int line);
 //! @param [in] line - line where was dump
 //! @return 0
 
-int list_dump_info(list_s * list, const char * func, const char * file, int line);
+int list_dump_info(list_t * list, const char * func, const char * file, int line);
 
 //! @brief Add arrows from node_info to head, tail and free
 //!
 //! @param list [in] - ptr to list
 
-int link_head_tail_free(list_s * list);
+int link_head_tail_free(list_t * list);
 
 //! @brief Func create string with graphiz console command (make png from .dot file)
 //! it use global variable 'dump_number' to create name of next picture
@@ -137,16 +137,16 @@ char * create_graphiz_cmd(void);
 //! @brief Func to check list
 //! Summarize codes of mistakes to make number where each bit is concrete mistake
 //!
-//! @param [in] list - ptr to queue
+//! @param [in] list - ptr to list
 //!
 //! @return error number
 
-int list_verify(list_s * list);
+int list_verify(list_t * list);
 
 //! @brief Write to log errors with using error number
 //!
 //! @param [in] error_number - error number what return list verify
 
-void error_number_translate(list_s * list);
+void error_number_translate(list_t * list);
 
 #endif

@@ -60,7 +60,7 @@ int close_graphiz_file(void)
     int close_log_file(void) { return 0; }
 #endif
 
-int graphiz_init(list_s * list)
+int graphiz_init(list_t * list)
 {
     ASSERT(list);
     ASSERT(graphiz_file);
@@ -72,7 +72,7 @@ int graphiz_init(list_s * list)
     return 0;
 }
 
-int add_node(node * nd, int index, const char * color)
+int add_node(node_t * nd, int index, const char * color)
 {
     ASSERT(nd);
     ASSERT(graphiz_file);
@@ -100,7 +100,7 @@ int link_nodes(int index1, int index2, const char * color)
     return 0;
 }
 
-int link_head_tail_free(list_s * list)
+int link_head_tail_free(list_t * list)
 {
     ASSERT(list);
     ASSERT(graphiz_file);
@@ -126,7 +126,7 @@ char * create_graphiz_cmd(void)
     return cmd;
 }
 
-int list_dump_(list_s * list, const char * func, const char * file, int line)
+int list_dump_(list_t * list, const char * func, const char * file, int line)
 {
     ASSERT(list);
 
@@ -189,7 +189,7 @@ int list_dump_(list_s * list, const char * func, const char * file, int line)
     return 0;
 }
 
-int list_dump_info(list_s * list, const char * func, const char * file, int line)
+int list_dump_info(list_t * list, const char * func, const char * file, int line)
 {
     ASSERT(list);
 
@@ -209,7 +209,7 @@ int list_dump_info(list_s * list, const char * func, const char * file, int line
     }
     else
     {
-        fprintf(log_file, "Queue %p (<span style=\"color: red\">ERROR</span>) \"%s\" at %s at %s(%d):\n",
+        fprintf(log_file, "List %p (<span style=\"color: red\">ERROR</span>) \"%s\" at %s at %s(%d):\n",
                 list, list->info.name, list->info.func, list->info.file, list->info.line);
         error_number_translate(list);
 
@@ -225,7 +225,7 @@ int list_dump_info(list_s * list, const char * func, const char * file, int line
     return 0;
 }
 
-int list_verify(list_s * list)
+int list_verify(list_t * list)
 {
     ASSERT(list);
 
@@ -269,7 +269,7 @@ int list_verify(list_s * list)
 }
 
 
-void error_number_translate(list_s * list)
+void error_number_translate(list_t * list)
 {
     ASSERT(list);
 
